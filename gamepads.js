@@ -58,7 +58,7 @@
         LeftStickY: _gamepads[controllerIndex].axes[1],
         RightStickX: _gamepads[controllerIndex].axes[2],
         RightStickY: _gamepads[controllerIndex].axes[3],
-        new: function(key) {
+        newPress: function(key) {
           return _gamepads[controllerIndex].buttons[key] == 1 && _prevGamepads[controllerIndex].buttons[key] == 0;
         }
       };
