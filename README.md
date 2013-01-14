@@ -1,7 +1,7 @@
 gamepads.js
 ===========
 
-**Version 0.1**
+**Version 0.2 (in development)**
 
 This is very early in development and is not meant for public consumption. If you do use it, it only works for the latest versions of Chrome (22 and newer).
 
