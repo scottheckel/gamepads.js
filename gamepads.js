@@ -8,6 +8,7 @@
  * Date: 1/13/2013
  */
 
+
 (function(window, undefined) {
   var navigator = window.navigator,
       gamepads = function() {
@@ -22,6 +23,12 @@
         for(var index = 0; callbacks && index < callbacks.length; callbacks++) {
           callbacks[index].call(this, data);
         }
+      },
+      createState = function() {
+        return {
+          axes: [],
+          buttons: []
+        };
       };
   gamepads.fn = gamepads.prototype = {
     init: function() {
@@ -46,6 +53,8 @@
         DPadLeft: _gamepads[controllerIndex].buttons[14],
         DPadRight: _gamepads[controllerIndex].buttons[15],
         Guide: _gamepads[controllerIndex].buttons[16],
+        LeftStickX: _gamepads[controllerIndex].axes[0],
+        LeftStickY: _gamepads[controllerIndex].axes[1],
         new: function(key) {
           return _gamepads[controllerIndex].buttons[key] == 1 && _prevGamepads[controllerIndex].buttons[key] == 0;
         }
@@ -82,12 +91,8 @@
         } else if(latest[index] !== undefined) {
           // New gamepad connected
           if(!_gamepads[index]) {
-            _gamepads[index] = {
-              buttons: []
-            };
-            _prevGamepads[index] = {
-              buttons: []
-            };
+            _gamepads[index] = createState();
+            _prevGamepads[index] = createState();
             if(_prevGamepads[index] === undefined ) {
               trigger('connected', {
                 gamepad: index
@@ -99,6 +104,10 @@
           for(var buttonIndex = 0; buttonIndex < latest[index].buttons.length; buttonIndex++) {
             _prevGamepads[index].buttons[buttonIndex] = _gamepads[index].buttons[buttonIndex];
             _gamepads[index].buttons[buttonIndex] = latest[index].buttons[buttonIndex];
+          }
+          for(var axesIndex = 0; axesIndex < latest[index].axes.length; axesIndex++) {
+            _prevGamepads[index].axes[axesIndex] = _gamepads[index].axes[axesIndex];
+            _gamepads[index].axes[axesIndex] = latest[index].axes[axesIndex];
           }
         }
       }
