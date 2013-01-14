@@ -24,10 +24,11 @@
           callbacks[index].call(this, data);
         }
       },
-      createState = function() {
+      createState = function(id) {
         return {
           axes: [],
-          buttons: []
+          buttons: [],
+          id: id
         };
       };
   gamepads.fn = gamepads.prototype = {
@@ -55,6 +56,8 @@
         Guide: _gamepads[controllerIndex].buttons[16],
         LeftStickX: _gamepads[controllerIndex].axes[0],
         LeftStickY: _gamepads[controllerIndex].axes[1],
+        RightStickX: _gamepads[controllerIndex].axes[2],
+        RightStickY: _gamepads[controllerIndex].axes[3],
         new: function(key) {
           return _gamepads[controllerIndex].buttons[key] == 1 && _prevGamepads[controllerIndex].buttons[key] == 0;
         }
@@ -91,8 +94,8 @@
         } else if(latest[index] !== undefined) {
           // New gamepad connected
           if(!_gamepads[index]) {
-            _gamepads[index] = createState();
-            _prevGamepads[index] = createState();
+            _gamepads[index] = createState(latest[index].id);
+            _prevGamepads[index] = createState(latest[index].id);
             if(_prevGamepads[index] === undefined ) {
               trigger('connected', {
                 gamepad: index
