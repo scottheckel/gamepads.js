@@ -11,9 +11,13 @@ Roadmap
 -------
 
 **v0.2** - 1/20/2013 - Initial button held implementation. Add documentation and examples.
+
 **v0.3** - 2/2013 - Firefox support.
+
 **v0.9** - TBA - Optimizations for speed, memory and filesize.
+
 **Future Work Not Slotted**
+
 - Button Combos
 - Button pressed/release eventing
 - Axes dead zones
@@ -25,8 +29,8 @@ Release History
 
 Browser Support
 ---------------
-**Chrome** - v22 and up
-**Firefox** - not supported in gamepads.js
-**Internet Explorer** - browser doesn't support gamepads
-**Opera** - browser doesn't support gamepads
-**Safari** - browser doesn't support gamepads
+- **Chrome** - v22 and up
+- **Firefox** - not supported in gamepads.js
+- **Internet Explorer** - browser doesn't support gamepads
+- **Opera** - browser doesn't support gamepads
+- **Safari** - browser doesn't support gamepads
