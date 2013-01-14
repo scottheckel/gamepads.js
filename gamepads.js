@@ -60,6 +60,9 @@
         RightStickY: _gamepads[controllerIndex].axes[3],
         newPress: function(key) {
           return _gamepads[controllerIndex].buttons[key] == 1 && _prevGamepads[controllerIndex].buttons[key] == 0;
+        },
+        released: function(key) {
+          return _gamepads[controllerIndex].buttons[key] == 0 && _prevGamepads[controllerIndex].buttons[key] == 1;
         }
       };
     },
@@ -115,7 +118,9 @@
         }
       }
     },
-    hasSupport: _hasSupport
+    hasSupport: _hasSupport,
+    PRESSED: 1,
+    RELEASED: 0
   };
   gamepads.fn.init.prototype = gamepads.fn;
   return (window.Gamepads = gamepads());
