@@ -39,7 +39,7 @@
     getState: function(controllerIndex) {
       return {
         buttonHeld: function(key, delta) {
-          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value
+          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value;
         },
         buttonNew: function(key) {
           return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value == 1 && _prevGamepads[controllerIndex].buttons[key].value == 0;
@@ -50,23 +50,6 @@
         buttonValue: function(key) {
           return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value;
         },
-        /*A: buttonValue(0),
-        B: buttonValue(1),
-        X: buttonValue(2),
-        Y: buttonValue(3),
-        LB: buttonValue(4),
-        RB: buttonValue(5),
-        LT: buttonValue(6),
-        RT: buttonValue(7),
-        Select: buttonValue(8),
-        Start: buttonValue(9),
-        LeftStick: buttonValue(10),
-        RightStick: buttonValue(11),
-        DPadUp: buttonValue(12),
-        DPadDown: buttonValue(13),
-        DPadLeft: buttonValue(14),
-        DPadRight: buttonValue(15),
-        Guide: buttonValue(16),*/
         LeftStickX: function() { return _gamepads[controllerIndex].axes[0]; },
         LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
         RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
@@ -146,7 +129,26 @@
     },
     hasSupport: _hasSupport,
     PRESSED: 1,
-    RELEASED: 0
+    RELEASED: 0,
+    Xbox360: {
+      A: 0,
+      B: 1,
+      X: 2,
+      Y: 3,
+      LB: 4,
+      RB: 5,
+      LT: 6,
+      RT: 7,
+      Select: 8,
+      Start: 9,
+      LeftStick: 10,
+      RightStick: 11,
+      DPadUp: 12,
+      DPadDown: 13,
+      DPadLeft: 14,
+      DPadRight: 15,
+      Guide: 16
+    }
   };
   gamepads.fn.init.prototype = gamepads.fn;
   return (window.Gamepads = gamepads());
