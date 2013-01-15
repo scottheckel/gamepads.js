@@ -24,11 +24,12 @@
           callbacks[index].call(this, data);
         }
       },
-      createState = function(id) {
+      createState = function() {
         return {
           axes: [],
           buttons: [],
-          id: id,
+          id: '',
+          isConnected: false,
           timestamp: 0
         };
       };
@@ -78,26 +79,25 @@
       // Look for any connected/disconnected
       for(var index = 0; index < latest.length; index++) {
         if(latest[index] === undefined) {
-          if(_gamepads[index] !== undefined) {
-            _prevGamepads[index] = _gamepads[index] = undefined;
+          if(!_gamepads[index].isConnected) {
+            _prevGamepads[index].isConnected = _gamepads[index].isConnected = false;
             trigger('disconnected', {
               gamepad: index
             });
           }
-        } else if(latest[index] !== undefined) {
+        } else {
           // New gamepad connected
-          if(!_gamepads[index]) {
-            _gamepads[index] = createState(latest[index].id);
-            if(_prevGamepads[index] === undefined ) {
-              trigger('connected', {
-                gamepad: index,
-                id: latest[index].id
-              });
-            }
-            _prevGamepads[index] = createState(latest[index].id);
+          if(!_gamepads[index].isConnected) {
+            _gamepads[index].id = _prevGamepads[index].id = latest[index].id;
+            _gamepads[index].isConnected = _prevGamepads[index].isConnected = true;
+            trigger('connected', {
+              gamepad: index,
+              id: latest[index].id
+            });
           }
 
           // Update the timestamp
+          _prevGamepads[index].timestamp = _gamepads[index].timestamp;
           _gamepads[index].timestamp = latest[index].timestamp;
 
           for(var buttonIndex = 0; buttonIndex < latest[index].buttons.length; buttonIndex++) {

@@ -10,7 +10,7 @@ A library seeking to remove the frustration from using gamepads in JavaScript. T
 Roadmap
 -------
 
-**v0.2** - 1/20/2013 - Initial button held implementation. Add documentation and examples.
+**v0.2** - 1/20/2013 - Initial button held implementation. API tweaks. Add documentation and examples.
 
 **v0.3** - 2/2013 - Firefox support.
 
