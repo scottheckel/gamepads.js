@@ -105,7 +105,7 @@
             // Determine the first time the button was held
             timestamp = undefined;
             if(latest[index].buttons[buttonIndex]) {
-              if(_gamepads[index].buttons[buttonIndex].value) {
+              if(_gamepads[index].isConnected && _gamepads[index].buttons[buttonIndex].value) {
                 timestamp = _gamepads[index].buttons[buttonIndex].timestamp;
               } else {
                 timestamp = latest[index].timestamp;
