@@ -28,7 +28,8 @@
         return {
           axes: [],
           buttons: [],
-          id: id
+          id: id,
+          timestamp: 0
         };
       };
   gamepads.fn = gamepads.prototype = {
@@ -37,33 +38,39 @@
     },
     getState: function(controllerIndex) {
       return {
-        A: _gamepads[controllerIndex].buttons[0],
-        B: _gamepads[controllerIndex].buttons[1],
-        X: _gamepads[controllerIndex].buttons[2],
-        Y: _gamepads[controllerIndex].buttons[3],
-        LB: _gamepads[controllerIndex].buttons[4],
-        RB: _gamepads[controllerIndex].buttons[5],
-        LT: _gamepads[controllerIndex].buttons[6],
-        RT: _gamepads[controllerIndex].buttons[7],
-        Select: _gamepads[controllerIndex].buttons[8],
-        Start: _gamepads[controllerIndex].buttons[9],
-        LeftStick: _gamepads[controllerIndex].buttons[10],
-        RightStick: _gamepads[controllerIndex].buttons[11],
-        DPadUp: _gamepads[controllerIndex].buttons[12],
-        DPadDown: _gamepads[controllerIndex].buttons[13],
-        DPadLeft: _gamepads[controllerIndex].buttons[14],
-        DPadRight: _gamepads[controllerIndex].buttons[15],
-        Guide: _gamepads[controllerIndex].buttons[16],
-        LeftStickX: _gamepads[controllerIndex].axes[0],
-        LeftStickY: _gamepads[controllerIndex].axes[1],
-        RightStickX: _gamepads[controllerIndex].axes[2],
-        RightStickY: _gamepads[controllerIndex].axes[3],
-        newPress: function(key) {
-          return _gamepads[controllerIndex].buttons[key] == 1 && _prevGamepads[controllerIndex].buttons[key] == 0;
+        buttonHeld: function(key, delta) {
+          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value
         },
-        released: function(key) {
-          return _gamepads[controllerIndex].buttons[key] == 0 && _prevGamepads[controllerIndex].buttons[key] == 1;
-        }
+        buttonNew: function(key) {
+          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value == 1 && _prevGamepads[controllerIndex].buttons[key].value == 0;
+        },
+        buttonReleased: function(key) {
+          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value == 0 && _prevGamepads[controllerIndex].buttons[key].value == 1;
+        },
+        buttonValue: function(key) {
+          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value;
+        },
+        /*A: buttonValue(0),
+        B: buttonValue(1),
+        X: buttonValue(2),
+        Y: buttonValue(3),
+        LB: buttonValue(4),
+        RB: buttonValue(5),
+        LT: buttonValue(6),
+        RT: buttonValue(7),
+        Select: buttonValue(8),
+        Start: buttonValue(9),
+        LeftStick: buttonValue(10),
+        RightStick: buttonValue(11),
+        DPadUp: buttonValue(12),
+        DPadDown: buttonValue(13),
+        DPadLeft: buttonValue(14),
+        DPadRight: buttonValue(15),
+        Guide: buttonValue(16),*/
+        LeftStickX: function() { return _gamepads[controllerIndex].axes[0]; },
+        LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
+        RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
+        RightStickY: function() { return _gamepads[controllerIndex].axes[3]; }
       };
     },
     on: function(eventKey, callback) {
@@ -80,13 +87,13 @@
       }
       return this;
     },
-    update: function() {
+    update: function() {  // This mehtod needs to be cleaned up, it's LONNNNGGGG
       // Get the latest gamepads
-      var latest = navigator.webkitGetGamepads();
+      var latest = navigator.webkitGetGamepads(),
+          timestamp;
 
       // Look for any connected/disconnected
       for(var index = 0; index < latest.length; index++) {
-        // _prevGamepads[index] = _gamepads[index];
         if(latest[index] === undefined) {
           if(_gamepads[index] !== undefined) {
             _prevGamepads[index] = _gamepads[index] = undefined;
@@ -98,18 +105,36 @@
           // New gamepad connected
           if(!_gamepads[index]) {
             _gamepads[index] = createState(latest[index].id);
-            _prevGamepads[index] = createState(latest[index].id);
             if(_prevGamepads[index] === undefined ) {
               trigger('connected', {
-                gamepad: index
+                gamepad: index,
+                id: latest[index].id
               });
             }
+            _prevGamepads[index] = createState(latest[index].id);
           }
 
-          // Copy over the values to the current and previous states
+          // Update the timestamp
+          _gamepads[index].timestamp = latest[index].timestamp;
+
           for(var buttonIndex = 0; buttonIndex < latest[index].buttons.length; buttonIndex++) {
+
+            // Determine the first time the button was held
+            timestamp = undefined;
+            if(latest[index].buttons[buttonIndex]) {
+              if(_gamepads[index].buttons[buttonIndex].value) {
+                timestamp = _gamepads[index].buttons[buttonIndex].timestamp;
+              } else {
+                timestamp = latest[index].timestamp;
+              }
+            }
+
+            // Copy over the values to the current and previous states
             _prevGamepads[index].buttons[buttonIndex] = _gamepads[index].buttons[buttonIndex];
-            _gamepads[index].buttons[buttonIndex] = latest[index].buttons[buttonIndex];
+            _gamepads[index].buttons[buttonIndex] = {
+              timestamp: timestamp,
+              value: latest[index].buttons[buttonIndex]
+            };
           }
           for(var axesIndex = 0; axesIndex < latest[index].axes.length; axesIndex++) {
             _prevGamepads[index].axes[axesIndex] = _gamepads[index].axes[axesIndex];
@@ -117,6 +142,7 @@
           }
         }
       }
+      return this;
     },
     hasSupport: _hasSupport,
     PRESSED: 1,
