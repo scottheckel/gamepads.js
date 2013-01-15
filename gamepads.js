@@ -14,10 +14,6 @@
       gamepads = function() {
         return new gamepads.fn.init();
       },
-      _callbacks = {},
-      _gamepads = [,,,,],
-      _prevGamepads = [,,,,],
-      _hasSupport = !!navigator.webkitGetGamepads,
       trigger = function(eventKey, data) {
         var callbacks = _callbacks[eventKey];
         for(var index = 0; callbacks && index < callbacks.length; callbacks++) {
@@ -32,7 +28,11 @@
           isConnected: false,
           timestamp: 0
         };
-      };
+      },
+      _callbacks = {},
+      _gamepads = [createState(),createState(),createState(),createState()],
+      _prevGamepads = [createState(),createState(),createState(),createState()],
+      _hasSupport = !!navigator.webkitGetGamepads;
   gamepads.fn = gamepads.prototype = {
     init: function() {
       return this;
@@ -79,7 +79,7 @@
       // Look for any connected/disconnected
       for(var index = 0; index < latest.length; index++) {
         if(latest[index] === undefined) {
-          if(!_gamepads[index].isConnected) {
+          if(_gamepads[index].isConnected) {
             _prevGamepads[index].isConnected = _gamepads[index].isConnected = false;
             trigger('disconnected', {
               gamepad: index
