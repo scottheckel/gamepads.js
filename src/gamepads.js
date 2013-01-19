@@ -29,6 +29,25 @@
           timestamp: 0
         };
       },
+      connectStates = function(state, prevState, id, totalButtons, totalAxes) {
+        state.id = prevState.id = id;
+        state.isConnected = prevState.isConnected = true;
+        state.buttons = [];
+        prevState.buttons = [];
+        state.axes = [];
+        prevState.axes = [];
+
+        var index;
+        for(index = 0; index < totalButtons; index++) {
+          state.buttons[index] = {
+            timestamp: undefined,
+            value: 0
+          };
+        }
+        for(index = 0; index < totalAxes; index++) {
+          state.axes[index] = 0;
+        }
+      },
       _callbacks = {},
       _gamepads = [createState(),createState(),createState(),createState()],
       _prevGamepads = [createState(),createState(),createState(),createState()],
@@ -40,7 +59,11 @@
     getState: function(controllerIndex) {
       return {
         buttonHeld: function(key, delta) {
-          return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value;
+          if(_gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value > 0)
+          {
+            return _gamepads[controllerIndex].buttons[key].timestamp - _prevGamepads[controllerIndex].buttons[key].timestamp;
+          }
+          return 0;
         },
         buttonNew: function(key) {
           return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value == 1 && _prevGamepads[controllerIndex].buttons[key].value == 0;
@@ -88,8 +111,7 @@
         } else {
           // New gamepad connected
           if(!_gamepads[index].isConnected) {
-            _gamepads[index].id = _prevGamepads[index].id = latest[index].id;
-            _gamepads[index].isConnected = _prevGamepads[index].isConnected = true;
+            connectStates(_gamepads[index], _prevGamepads[index], latest[index].id, latest[index].buttons.length, latest[index].axes.length);
             trigger('connected', {
               gamepad: index,
               id: latest[index].id
@@ -101,21 +123,10 @@
           _gamepads[index].timestamp = latest[index].timestamp;
 
           for(var buttonIndex = 0; buttonIndex < latest[index].buttons.length; buttonIndex++) {
-
-            // Determine the first time the button was held
-            timestamp = undefined;
-            if(latest[index].buttons[buttonIndex]) {
-              if(_gamepads[index].isConnected && _gamepads[index].buttons[buttonIndex].value) {
-                timestamp = _gamepads[index].buttons[buttonIndex].timestamp;
-              } else {
-                timestamp = latest[index].timestamp;
-              }
-            }
-
             // Copy over the values to the current and previous states
             _prevGamepads[index].buttons[buttonIndex] = _gamepads[index].buttons[buttonIndex];
             _gamepads[index].buttons[buttonIndex] = {
-              timestamp: timestamp,
+              timestamp: _prevGamepads[index].buttons[buttonIndex].value > 0 && latest[index].buttons[buttonIndex] > 0 ? _prevGamepads[index].buttons[buttonIndex].timestamp : latest[index].timestamp,
               value: latest[index].buttons[buttonIndex]
             };
           }
