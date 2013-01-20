@@ -4,6 +4,7 @@ var chai = require("chai"),
 var assert = chai.assert;
 
 describe('Gamepads', function () {
+    
     describe('Support', function() {
 
         it('has chrome 22+ support', function () {
