@@ -11,12 +11,12 @@ describe('Gamepads', function () {
             assert.isTrue(gamepads.hasSupport);
         });
 
-        it('no chrome 21 support', function () {
+        it('has no chrome 21 support', function () {
             var gamepads = Gamepads.create({ navigator: { webkitGamepads: [] }});
             assert.isFalse(gamepads.hasSupport);
         });
 
-        it('no other browsers supported', function () {
+        it('has no other browsers supported', function () {
             var gamepads = Gamepads.create({ navigator: { }});
             assert.isFalse(gamepads.hasSupport);
         });
@@ -88,6 +88,55 @@ describe('Gamepads', function () {
             var postConnectedState = gamepads.getState(0);
             assert.isFalse(postConnectedState.isConnected, 'disconnected after update');
 
+        });
+
+    });
+
+    describe('Button Presses', function() {
+
+        var pads = [
+            {
+                axes: [0,0,0,0],
+                buttons: [0,0,0,0],
+                id: 'a controller',
+                timestamp: 0
+            },
+            {
+                axes: [0,0,0,0],
+                buttons: [0,0,0,0],
+                id: 'a different controller',
+                timestamp: 0
+            }
+        ];
+
+        var window = { navigator: { webkitGetGamepads: function() { return pads; } } };
+
+        var gamepads = Gamepads.create(window);
+
+        it('can detect when it is a new button press', function() {
+            pads[0].buttons[0] = 1;
+            gamepads.update();
+
+            var state = gamepads.getState(0);
+            assert.isTrue(state.buttonNew(0), 'button 0 new press');
+
+            gamepads.update();
+
+            assert.isFalse(state.buttonNew(0), 'saved state button 0 not a new press');
+            assert.isFalse(gamepads.getState(0).buttonNew(0), 'new state button 0 not a new press');
+        });
+
+        if('can detect the value of a button press', function() {
+            pads[0].buttons[0] = 1;
+            pads[0].buttons[1] = 0;
+            pads[0].buttons[2] = 1;
+
+            gamepads.update();
+
+            var state = gamepads.getState(0);
+            assert.strictEqual(1, state.buttonValue(0), 'button 0 correct value');
+            assert.strictEqual(0, state.buttonValue(1), 'button 1 correct value');
+            assert.strictEqual(1, state.buttonValue(2), 'button 2 correct value');
         });
 
     });
