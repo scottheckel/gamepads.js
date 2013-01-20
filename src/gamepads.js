@@ -58,12 +58,12 @@
     },
     getState: function(controllerIndex) {
       return {
-        buttonHeld: function(key) {
+        buttonHeld: function(key, delta) {
           if(_gamepads[controllerIndex].buttons[key].value > 0 && _prevGamepads[controllerIndex].buttons[key].value > 0)
           {
-            return _gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp;
+            return delta ? (_gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp) >= delta : true;
           }
-          return 0;
+          return false;
         },
         buttonNew: function(key) {
           return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value == 1 && _prevGamepads[controllerIndex].buttons[key].value == 0;
@@ -78,9 +78,7 @@
         LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
         RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
         RightStickY: function() { return _gamepads[controllerIndex].axes[3]; },
-        isConnected: _gamepads[controllerIndex].isConnected,
-        buttonTimestamp: function(key) { return _gamepads[controllerIndex].buttons[key].timestamp; },
-        prevButtonTimestamp: function(key) { return _prevGamepads[controllerIndex].buttons[key].timestamp; }
+        isConnected: _gamepads[controllerIndex].isConnected
       };
     },
     on: function(eventKey, callback) {

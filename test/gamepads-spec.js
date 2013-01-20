@@ -161,8 +161,8 @@ describe('Gamepads', function () {
 
             gamepads.update();
 
-            assert.strictEqual(state.buttonHeld(0), 0, 'button 0 held for 0');
-            assert.strictEqual(state.buttonHeld(1), 0, 'button 1 held for 0');
+            assert.isFalse(state.buttonHeld(0), 'button 0 not held');
+            assert.isFalse(state.buttonHeld(1), 'button 1 not held');
 
             gamepads.update();
 
@@ -172,8 +172,11 @@ describe('Gamepads', function () {
 
             gamepads.update();
 
-            assert.strictEqual(state.buttonHeld(0), 100, 'button 0 held for 100');
-            assert.strictEqual(state.buttonHeld(1), 100, 'button 1 held for 100');
+            assert.isTrue(state.buttonHeld(0, 100), 'button 0 held for 100 or more');
+            assert.isTrue(state.buttonHeld(0), 'button 0 held');
+            assert.isTrue(state.buttonHeld(1, 99), 'button 1 held for 99 or more');
+            assert.isFalse(state.buttonHeld(1, 101), 'button 1 not held for more than 101')
+            assert.isTrue(state.buttonHeld(1), 'button 1 held');
 
             pads[0].buttons[0] = 1;
             pads[0].buttons[1] = 0;
@@ -181,8 +184,8 @@ describe('Gamepads', function () {
 
             gamepads.update();
 
-            assert.strictEqual(state.buttonHeld(0), 200, 'button 0 held for 200');
-            assert.strictEqual(state.buttonHeld(1), 0, 'button 0 not held');
+            assert.isTrue(state.buttonHeld(0, 150), 'button 0 held for more than 150');
+            assert.isFalse(state.buttonHeld(1), 'button 0 not held');
         });
 
     });
