@@ -58,10 +58,10 @@
     },
     getState: function(controllerIndex) {
       return {
-        buttonHeld: function(key, delta) {
-          if(_gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value > 0)
+        buttonHeld: function(key) {
+          if(_gamepads[controllerIndex].buttons[key].value > 0 && _prevGamepads[controllerIndex].buttons[key].value > 0)
           {
-            return _gamepads[controllerIndex].buttons[key].timestamp - _prevGamepads[controllerIndex].buttons[key].timestamp;
+            return _gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp;
           }
           return 0;
         },
@@ -78,7 +78,9 @@
         LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
         RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
         RightStickY: function() { return _gamepads[controllerIndex].axes[3]; },
-        isConnected: _gamepads[controllerIndex].isConnected
+        isConnected: _gamepads[controllerIndex].isConnected,
+        buttonTimestamp: function(key) { return _gamepads[controllerIndex].buttons[key].timestamp; },
+        prevButtonTimestamp: function(key) { return _prevGamepads[controllerIndex].buttons[key].timestamp; }
       };
     },
     on: function(eventKey, callback) {
@@ -127,7 +129,7 @@
             // Copy over the values to the current and previous states
             _prevGamepads[index].buttons[buttonIndex] = _gamepads[index].buttons[buttonIndex];
             _gamepads[index].buttons[buttonIndex] = {
-              timestamp: _prevGamepads[index].buttons[buttonIndex].value > 0 && latest[index].buttons[buttonIndex] > 0 ? _prevGamepads[index].buttons[buttonIndex].timestamp : latest[index].timestamp,
+              timestamp: latest[index].buttons[buttonIndex] == 0 ? 0 : (_prevGamepads[index].buttons[buttonIndex].value > 0  ? _prevGamepads[index].buttons[buttonIndex].timestamp : latest[index].timestamp),
               value: latest[index].buttons[buttonIndex]
             };
           }

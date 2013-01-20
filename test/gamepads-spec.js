@@ -99,13 +99,13 @@ describe('Gamepads', function () {
                 axes: [0,0,0,0],
                 buttons: [0,0,0,0],
                 id: 'a controller',
-                timestamp: 0
+                timestamp: 9
             },
             {
                 axes: [0,0,0,0],
                 buttons: [0,0,0,0],
                 id: 'a different controller',
-                timestamp: 0
+                timestamp: 9
             }
         ];
 
@@ -114,29 +114,75 @@ describe('Gamepads', function () {
         var gamepads = Gamepads.create(window);
 
         it('can detect when it is a new button press', function() {
-            pads[0].buttons[0] = 1;
+            pads[1].buttons[0] = 1;
             gamepads.update();
 
-            var state = gamepads.getState(0);
+            var state = gamepads.getState(1);
             assert.isTrue(state.buttonNew(0), 'button 0 new press');
 
             gamepads.update();
 
             assert.isFalse(state.buttonNew(0), 'saved state button 0 not a new press');
-            assert.isFalse(gamepads.getState(0).buttonNew(0), 'new state button 0 not a new press');
+            assert.isFalse(gamepads.getState(1).buttonNew(0), 'new state button 0 not a new press');
         });
 
-        if('can detect the value of a button press', function() {
+        it('can detect the value of a button press', function() {
             pads[0].buttons[0] = 1;
             pads[0].buttons[1] = 0;
             pads[0].buttons[2] = 1;
+            pads[1].buttons[0] = 0;
+            pads[1].buttons[1] = 0;
+            pads[1].buttons[2] = 1;
+
+            gamepads.update();
+
+            var state1 = gamepads.getState(0),
+                state2 = gamepads.getState(1);
+            assert.strictEqual(state1.buttonValue(0), 1, 'pad 0 button 0 correct value');
+            assert.strictEqual(state1.buttonValue(1), 0, 'pad 0 button 1 correct value');
+            assert.strictEqual(state1.buttonValue(2), 1, 'pad 0 button 2 correct value');
+            assert.strictEqual(state2.buttonValue(0), 0, 'pad 1 button 0 correct value');
+            assert.strictEqual(state2.buttonValue(1), 0, 'pad 1 button 1 correct value');
+            assert.strictEqual(state2.buttonValue(2), 1, 'pad 1 button 2 correct value');
+        });
+
+        it('can detect a held button press', function() {
+            pads[0].buttons[0] = 0;
+            pads[0].buttons[1] = 0;
+            pads[0].timestamp = 0;
 
             gamepads.update();
 
             var state = gamepads.getState(0);
-            assert.strictEqual(1, state.buttonValue(0), 'button 0 correct value');
-            assert.strictEqual(0, state.buttonValue(1), 'button 1 correct value');
-            assert.strictEqual(1, state.buttonValue(2), 'button 2 correct value');
+
+            pads[0].buttons[0] = 1;
+            pads[0].buttons[1] = 1;
+            pads[0].timestamp = 100;
+
+            gamepads.update();
+
+            assert.strictEqual(state.buttonHeld(0), 0, 'button 0 held for 0');
+            assert.strictEqual(state.buttonHeld(1), 0, 'button 1 held for 0');
+
+            gamepads.update();
+
+            pads[0].buttons[0] = 1;
+            pads[0].buttons[1] = 1;
+            pads[0].timestamp = 200;
+
+            gamepads.update();
+
+            assert.strictEqual(state.buttonHeld(0), 100, 'button 0 held for 100');
+            assert.strictEqual(state.buttonHeld(1), 100, 'button 1 held for 100');
+
+            pads[0].buttons[0] = 1;
+            pads[0].buttons[1] = 0;
+            pads[0].timestamp = 300;
+
+            gamepads.update();
+
+            assert.strictEqual(state.buttonHeld(0), 200, 'button 0 held for 200');
+            assert.strictEqual(state.buttonHeld(1), 0, 'button 0 not held');
         });
 
     });
