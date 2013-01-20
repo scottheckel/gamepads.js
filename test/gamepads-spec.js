@@ -66,9 +66,11 @@ describe('Gamepads', function () {
             assert.equal(connectedData.id, 'temp', 'id set correctly');
             assert.equal(connectedData.gamepad, 0, 'correct gamepad specified');
 
+
             var postConnectedState = gamepads.getState(0);
             assert(postConnectedState, 'got the state');
             assert.isTrue(postConnectedState.isConnected, 'connected after update');
+            assert.isTrue(preUpdateState.isConnected, 'blah');
         });
 
         it('can get disconnected and fire disconnected event', function() {
