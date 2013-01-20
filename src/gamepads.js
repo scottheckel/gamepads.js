@@ -77,7 +77,8 @@
         LeftStickX: function() { return _gamepads[controllerIndex].axes[0]; },
         LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
         RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
-        RightStickY: function() { return _gamepads[controllerIndex].axes[3]; }
+        RightStickY: function() { return _gamepads[controllerIndex].axes[3]; },
+        isConnected: _gamepads[controllerIndex].isConnected
       };
     },
     on: function(eventKey, callback) {
