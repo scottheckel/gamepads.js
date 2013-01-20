@@ -24,8 +24,7 @@
 				// Get the state for gamepad at index
 				gamepadState = Gamepads.getState(index);
 
-				// Gamepad state will be undefined if not connected
-				if(gamepadState) {
+				if(gamepadState.isConnected) {
 
 					// Check every button to a new button press
 					for(buttonIndex = 0; buttonIndex < 17; buttonIndex++) {
