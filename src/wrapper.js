@@ -13,6 +13,6 @@
 
     return window.Gamepads;
   }
-  module.exports = create('undefined' === typeof window ? undefined : window);
+  module.exports = create('undefined' === typeof window ? undefined : window, Math);
   module.exports.create = create;
 }());

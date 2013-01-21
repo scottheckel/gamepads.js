@@ -9,7 +9,7 @@
  */
 
 
-(function(window, undefined) {
+(function(window, math, undefined) {
   var navigator = window.navigator,
       gamepads = function() {
         return new gamepads.fn.init();
@@ -119,10 +119,16 @@
           buttonValue: function(key) {
             return _gamepads[controllerIndex] && _gamepads[controllerIndex].buttons[key] && _gamepads[controllerIndex].buttons[key].value;
           },
-          LeftStickX: function() { return _gamepads[controllerIndex].axes[0]; },
-          LeftStickY: function() { return _gamepads[controllerIndex].axes[1]; },
-          RightStickX: function() { return _gamepads[controllerIndex].axes[2]; },
-          RightStickY: function() { return _gamepads[controllerIndex].axes[3]; },
+          stickValue: function(stick, usePolar) {
+            var x = _gamepads[controllerIndex].axes[0+(stick==0?0:2)];
+            var y = _gamepads[controllerIndex].axes[1+(stick==0?0:2)];
+            return {
+              x: x,
+              y: y,
+              radial: usePolar ? math.sqrt(x*x + y*y) : undefined,
+              angular: usePolar ? math.atan2(y, x) : undefined
+            };
+          },
           isConnected: _gamepads[controllerIndex].isConnected
         };
       }
@@ -155,6 +161,8 @@
     hasSupport: _hasSupport,
     PRESSED: 1,
     RELEASED: 0,
+    LEFTSTICK: 0,
+    RIGHTSTICK: 1,
     Xbox360: {
       A: 0,
       B: 1,
@@ -177,4 +185,4 @@
   };
   gamepads.fn.init.prototype = gamepads.fn;
   return (window.Gamepads = gamepads());
-})(window);
+})(window, Math);
