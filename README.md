@@ -25,7 +25,7 @@ Unsubscribe all callbacks for a particular event.  Supported events can be found
 ####update() : returns Gamepads
 Updates the current gamepad states.  This should be called regularly either with requestAnimationFrame or a setInterval/setTimeout. Once this method is called all GamepadStates will be refreshed with the latest data.
 
-###GamepadsState object
+###GamepadState object
 Key and stick values are zero based integers.
 
 ####buttonHeld(key[, delta]) : return boolean
