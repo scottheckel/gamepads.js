@@ -46,16 +46,16 @@ Retrieve the current stick cartessian coordinates or if usePolar is specified po
 Roadmap
 -------
 
-**v0.3** - 2/2013 - Firefox support.
+**v0.3** - 2/2013 - Firefox support.  Edge case input error handling.
+
+**v0.4** - TBA - Button Combos.
 
 **v0.9** - TBA - Optimizations for speed, memory and filesize.
 
 **Future Work Not Slotted**
 
-- Button Combos
 - Button pressed/release eventing
 - Axes dead zones
-- Handle edge cases and make sure input is valid
 - Extra suport on a per controller type basis (buttons, etc)
 
 Release History
