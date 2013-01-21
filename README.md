@@ -61,6 +61,7 @@ Roadmap
 Release History
 ---------------
 **v0.2** - 1/21/2013 - Initial button held implementation. API tweaks. Add documentation and examples.
+
 **v0.1** - 1/13/2013 - Initial version with Chrome 22+ support.
 
 Browser Support
