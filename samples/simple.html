@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Simple Gamepads.js Sample</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	</head>
+	<body>
+		<ul id="messages">
+			<li style='background:yellow'>Welcome to the sample.</li>
+		</ul>
+		<script src="../src/gamepads.js"></script>
+		<script>
+		var messagesList = document.getElementById('messages');
+
+		function lookForInput() {
+			var index
+			  , buttonIndex
+			  , gamepadState;
+
+			// Loop through all four possible gamepads				
+			for(index = 0; index < 4; index++) {
+
+				// Get the state for gamepad at index
+				gamepadState = Gamepads.getState(index);
+
+				if(gamepadState.isConnected) {
+
+					// Check every button to a new button press
+					for(buttonIndex = 0; buttonIndex < 17; buttonIndex++) {
+						if(gamepadState.buttonNew(buttonIndex)) {
+							messagesList.innerHTML = '<li>Button #' + buttonIndex + ' on Gamepad #' + index + ' pressed.</li>' + messagesList.innerHTML;
+						}	
+					} // for
+				} // if
+			} // for
+		} // lookforinput
+
+		function loop() {
+			// Update the gamepads
+			Gamepads.update();
+
+			lookForInput();
+
+			setTimeout(loop, 100);
+		}
+
+		// Fire this event when any gamepad is connected
+		Gamepads.on('connected', function(data) {
+			messagesList.innerHTML = '<li>Gamepad #' + data.gamepad + ' (aka \'' + data.id + '\') connected. Press buttons!</li>' + messagesList.innerHTML;
+		});
+
+		Gamepads.on('disconnected', function(data) {
+			messagesList.innerHTML = '<li>Gamepad #' + data.gamepad + ' disconnected.</li>' + messagesList.innerHTML;
+		});
+
+		if(Gamepads.hasSupport) {
+			messagesList.innerHTML = '<li style="background:green;color:white">Your browser has gamepad support and Gamepads.js supports it. Insert a controller and press any button to connect it.</li>' + messagesList.innerHTML;
+			loop();	
+		} else {
+			messagesList.innerHTML = '<li style="background:red">Either your browser does not have gamepad support or Gamepads.js does not support it.</li>' + messagesList.innerHTML;
+		}
+		
+		</script>
+	</body>
+</html>

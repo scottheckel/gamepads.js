@@ -1,0 +1,10 @@
+{
+  "name": "gamepadsjs",
+  "description": "HTML 5 Gamepads library for making your life easier.",
+  "version": "0.2.0",
+  "main": "./src/gamepads",
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  }
+}
