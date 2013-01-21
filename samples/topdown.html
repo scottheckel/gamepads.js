@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Top-down Shooter Sample</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+		body {
+			font-family:Arial,Verdana,Helvetica,sans-serif;
+		}
+		#canvas, #message {
+			position:absolute;
+			width:600px;
+			height:600px;
+		}
+		#message {
+			position:absolute;
+			background:#f55;
+			color:#fff;
+		}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="600" height="600"></canvas>
+		<div id="message"></div>
+		<script src="../src/gamepads.js"></script>
+		<script>
+		(function() {
+			var canvas = document.getElementById('canvas'),
+				context = canvas.getContext('2d'),
+				STATE_CONNECT = 0,
+				STATE_GAMING = 1,
+				state = STATE_CONNECT,
+				lastLoopTime,
+				player = {
+					x: 0,
+					y: 0,
+					facing: 0
+				},
+				boxes = [];
+
+			Gamepads.on('connected', function(data) {
+				if(state === STATE_CONNECT) {
+					state = STATE_GAMING;
+					document.getElementById('message').style.display='none';
+					create();
+				}
+			});
+
+			function create() {
+				boxes[0] = {
+					x: -200,
+					y: -100
+				};
+
+				boxes[1] = {
+					x: 250,
+					y: 100
+				};
+
+				boxes[2] = {
+					x: 50,
+					y: 275
+				};
+			}
+
+			function loop() {
+				Gamepads.update();
+
+				if(state === STATE_GAMING) {
+					gameState();
+				}
+
+				setTimeout(loop, 50);
+			}
+
+			function gameState() {
+				var currentTime = (new Date()).getTime();
+				var delta = (currentTime - lastLoopTime) / 1000;
+
+				handleInput(delta);
+				draw();
+
+				lastLoopTime = currentTime;
+			}
+
+			function handleInput(delta) {
+				var state = Gamepads.getState(0);
+
+				if(state.isConnected) {
+					
+					// Get the direction the character is facting
+					var rightStick = state.stickValue(Gamepads.RIGHTSTICK, true);
+					if(Math.abs(rightStick.radial) > 0.5) {
+						player.facing = rightStick.angular;
+					}
+
+					var leftStick = state.stickValue(Gamepads.LEFTSTICK, true);
+					if(Math.abs(leftStick.radial) > 0.25) {
+						player.x += 100 * Math.cos(leftStick.angular) * delta;
+						player.y += 100 * Math.sin(leftStick.angular) * delta;
+					}
+				}
+			}
+
+			function draw() {
+				context.save();
+				context.translate(-player.x + 300,-player.y + 300);
+				context.clearRect(player.x - 300, player.y - 300, 600, 600);
+
+				// Draw the boxes
+				var index;
+				for(index = 0; index < boxes.length; index++) {
+					context.beginPath();
+					context.fillStyle = 'brown';
+					context.moveTo(boxes[index].x, boxes[index].y);
+					context.lineTo(boxes[index].x + 40, boxes[index].y);
+					context.lineTo(boxes[index].x + 40, boxes[index].y + 40);
+					context.lineTo(boxes[index].x, boxes[index].y + 40);
+					context.lineTo(boxes[index].x, boxes[index].y);
+					context.fill();
+				}
+
+				// Draw the player
+				context.beginPath();
+				context.arc(player.x, player.y, 20, 0, 2 * Math.PI, false);
+				context.fillStyle='red';
+				context.fill();
+				context.beginPath();
+				context.strokeStyle = 'black';
+				context.lineWidth = 3;
+				context.moveTo(player.x, player.y);
+				context.lineTo(player.x + 25 * Math.cos(player.facing), player.y + 25 * Math.sin(player.facing));
+				context.stroke();
+
+				context.restore();
+			}
+
+			if(Gamepads.hasSupport) {
+				document.getElementById('message').innerHTML = 'Connect a gamepad and press any button to start';
+
+				lastLoopTime = (new Date()).getTime();
+
+				loop();
+			} else {
+				document.getElementById('message').innerHTML = 'Your browser does not have gamepad support.';
+			}
+
+		})();
+		</script>
+	</body>
+</html>
