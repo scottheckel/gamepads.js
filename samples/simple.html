@@ -31,6 +31,9 @@
 						if(gamepadState.buttonNew(buttonIndex)) {
 							messagesList.innerHTML = '<li>Button #' + buttonIndex + ' on Gamepad #' + index + ' pressed.</li>' + messagesList.innerHTML;
 						}	
+						if(gamepadState.buttonHeld(buttonIndex, 2000, true)) {
+							messagesList.innerHTML = '<li>Button #' + buttonIndex + ' on Gamepad #' + index + ' held for 400.</li>' + messagesList.innerHTML;
+						}
 					} // for
 				} // if
 			} // for

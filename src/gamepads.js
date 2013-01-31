@@ -74,13 +74,24 @@
 
         // Update the timestamp
         previous.timestamp = current.timestamp;
-        current.timestamp = latest.timestamp;
+        current.timestamp = (new Date()).getTime();
 
+        var buttonTimestamp;
         for(var buttonIndex = 0; buttonIndex < latest.buttons.length; buttonIndex++) {
+          if(latest.buttons[buttonIndex] > 0) {
+            if(previous.buttons[buttonIndex].value > 0) {
+              buttonTimestamp = current.buttons[buttonIndex].timestamp;
+            } else {
+              buttonTimestamp = current.timestamp;
+            }
+          } else {
+            buttonTimestamp = current.timestamp;
+          }
+
           // Copy over the values to the current and previous states
           previous.buttons[buttonIndex] = current.buttons[buttonIndex];
           current.buttons[buttonIndex] = {
-            timestamp: latest.buttons[buttonIndex] == 0 ? 0 : (previous.buttons[buttonIndex].value > 0  ? previous.buttons[buttonIndex].timestamp : latest.timestamp),
+            timestamp: buttonTimestamp,
             value: latest.buttons[buttonIndex]
           };
         }
@@ -108,7 +119,10 @@
             {
               var isHeld = delta ? (_gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp) >= delta : true;
               if(isHeld && canReset) {
+                console.log('button:' + _gamepads[controllerIndex].buttons[key].timestamp);
+                console.log('controller:' + _gamepads[controllerIndex].timestamp)
                 _gamepads[controllerIndex].buttons[key].timestamp = _gamepads[controllerIndex].timestamp;
+                console.log('after:' + _gamepads[controllerIndex].buttons[key].timestamp);
               }
               return isHeld;
             }
