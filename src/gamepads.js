@@ -103,10 +103,14 @@
       var state;
       if(!_cachedStates[controllerIndex]) {
         _cachedStates[controllerIndex] = {
-          buttonHeld: function(key, delta) {
+          buttonHeld: function(key, delta, canReset) {
             if(_gamepads[controllerIndex].buttons[key].value > 0 && _prevGamepads[controllerIndex].buttons[key].value > 0)
             {
-              return delta ? (_gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp) >= delta : true;
+              var isHeld = delta ? (_gamepads[controllerIndex].timestamp - _gamepads[controllerIndex].buttons[key].timestamp) >= delta : true;
+              if(isHeld && canReset) {
+                _gamepads[controllerIndex].buttons[key].timestamp = _gamepads[controllerIndex].timestamp;
+              }
+              return isHeld;
             }
             return false;
           },
